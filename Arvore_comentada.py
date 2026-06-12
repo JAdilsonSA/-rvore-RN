@@ -9,6 +9,7 @@ class ArvoreRubroNegra:
         # Inicializa a árvore vazia
         self.raiz = None
 
+
     # Rotação à esquerda utilizada para balanceamento
     def rotacao_esquerda(self, x):
 
@@ -38,6 +39,7 @@ class ArvoreRubroNegra:
         y.esquerda = x
         x.pai = y
 
+
     # Rotação à direita utilizada para balanceamento
     def rotacao_direita(self, y):
 
@@ -66,6 +68,7 @@ class ArvoreRubroNegra:
         # y passa a ser filho direito de x
         x.direita = y
         y.pai = x
+
 
     # Inserção seguindo as regras da árvore binária de busca
     def inserir(self, chave):
@@ -100,6 +103,7 @@ class ArvoreRubroNegra:
 
         # Corrige possíveis violações da árvore rubro-negra
         self.corrigir_insercao(novo)
+
 
     # Rebalanceamento após inserção
     def corrigir_insercao(self, z):
@@ -167,6 +171,34 @@ class ArvoreRubroNegra:
         # Garante que a raiz seja sempre preta
         self.raiz.cor = "PRETO"
 
+
+    # Busca um valor específico na árvore
+    def buscar(self, chave):
+
+    # Começa a busca pela raiz
+        atual = self.raiz
+
+    # Percorre a árvore enquanto existir um nó
+        while atual:
+
+        # Se encontrou a chave procurada
+            if chave == atual.chave:
+                return atual
+
+        # Se a chave procurada é menor,
+        # continua a busca pela subárvore esquerda
+            elif chave < atual.chave:
+                atual = atual.esquerda
+
+        # Se a chave procurada é maior,
+        # continua a busca pela subárvore direita
+            else:
+                atual = atual.direita
+
+    # Se sair do laço, a chave não existe na árvore
+        return None
+
+    
     # Percurso em ordem (esquerda -> raiz -> direita)
     def em_ordem(self, no):
 

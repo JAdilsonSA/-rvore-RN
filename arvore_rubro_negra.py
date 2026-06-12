@@ -136,6 +136,23 @@ class ArvoreRubroNegra:
 
         self.raiz.cor = "PRETO"
 
+    # Busca um valor na árvore
+    def buscar(self, chave):
+
+        atual = self.raiz
+
+        while atual:
+
+            if chave == atual.chave:
+                return atual
+
+            elif chave < atual.chave:
+                atual = atual.esquerda
+
+            else:
+                atual = atual.direita
+
+        return None
     # Percurso em ordem
     def em_ordem(self, no):
 

@@ -5,11 +5,19 @@ arvore = ArvoreRubroNegra()
 valores = [10, 20, 30, 15, 5, 25]
 
 for valor in valores:
-    print(f"\nInserindo {valor}...")
     arvore.inserir(valor)
 
-print("\nÁrvore final:\n")
 arvore.mostrar_arvore(arvore.raiz)
+
+valor_procurado = 15
+
+resultado = arvore.buscar(valor_procurado)
+
+if resultado:
+    print(f"\nNó {valor_procurado} encontrado!")
+    print(f"Cor: {resultado.cor}")
+else:
+    print(f"\nNó {valor_procurado} não encontrado.")
 
 
 
