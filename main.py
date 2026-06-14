@@ -19,5 +19,13 @@ if resultado:
 else:
     print(f"\nNó {valor_procurado} não encontrado.")
 
+print("\nÁrvore antes da remoção:")
+arvore.mostrar_arvore(arvore.raiz)
+
+arvore.remover(10)
+
+print("\nÁrvore depois da remoção:")
+arvore.mostrar_arvore(arvore.raiz)
+
 
 

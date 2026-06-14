@@ -153,6 +153,75 @@ class ArvoreRubroNegra:
                 atual = atual.direita
 
         return None
+
+    # Remove um valor da árvore
+    def remover(self, chave):
+
+        no = self.buscar(chave)
+
+    # Valor não encontrado
+        if no is None:
+            return False
+
+    # Caso 1: nó sem filhos
+        if no.esquerda is None and no.direita is None:
+
+            if no == self.raiz:
+                self.raiz = None
+
+            elif no == no.pai.esquerda:
+                no.pai.esquerda = None
+
+            else:
+                no.pai.direita = None
+
+    # Caso 2: nó possui apenas filho direito
+        elif no.esquerda is None:
+
+            self.substituir(no, no.direita)
+
+    # Caso 3: nó possui apenas filho esquerdo
+        elif no.direita is None:
+
+            self.substituir(no, no.esquerda)
+
+    # Caso 4: nó possui dois filhos
+        else:
+
+            sucessor = self.minimo(no.direita)
+
+            no.chave = sucessor.chave
+
+            if sucessor == sucessor.pai.esquerda:
+                sucessor.pai.esquerda = sucessor.direita
+            else:
+                sucessor.pai.direita = sucessor.direita
+
+        return True
+
+    # Substitui um nó por outro
+    def substituir(self, antigo, novo):
+
+        if antigo.pai is None:
+            self.raiz = novo
+
+        elif antigo == antigo.pai.esquerda:
+            antigo.pai.esquerda = novo
+
+        else:
+            antigo.pai.direita = novo
+
+        if novo:
+            novo.pai = antigo.pai
+
+    # Retorna o menor nó de uma subárvore
+    def minimo(self, no):
+
+        while no.esquerda:
+            no = no.esquerda
+
+        return no        
+    
     # Percurso em ordem
     def em_ordem(self, no):
 
