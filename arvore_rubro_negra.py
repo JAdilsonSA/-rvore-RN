@@ -5,8 +5,15 @@ from no import No
 
 class ArvoreRubroNegra:
 
-    def __init__(self):         
-        self.raiz = None
+    def __init__(self):
+
+      self.NIL = No(None)
+      self.NIL.cor = "PRETO"
+
+      self.NIL.esquerda = self.NIL
+      self.NIL.direita = self.NIL
+
+      self.raiz = self.NIL
 
     # Rotação à esquerda
     def rotacao_esquerda(self, x):
@@ -59,10 +66,13 @@ class ArvoreRubroNegra:
 
         novo = No(chave)
 
+        novo.esquerda = self.NIL
+        novo.direita = self.NIL
+
         pai = None
         atual = self.raiz
 
-        while atual:
+        while atual != self.NIL:
             pai = atual
 
             if novo.chave < atual.chave:
@@ -139,88 +149,195 @@ class ArvoreRubroNegra:
     # Busca um valor na árvore
     def buscar(self, chave):
 
-        atual = self.raiz
+      atual = self.raiz
 
-        while atual:
+      while atual != self.NIL:
 
-            if chave == atual.chave:
-                return atual
+        if chave == atual.chave:
+            return atual
 
-            elif chave < atual.chave:
-                atual = atual.esquerda
+        elif chave < atual.chave:
+            atual = atual.esquerda
 
-            else:
-                atual = atual.direita
+        else:
+            atual = atual.direita
 
-        return None
+      return self.NIL
 
     # Remove um valor da árvore
     def remover(self, chave):
 
-        no = self.buscar(chave)
+      z = self.buscar(chave)
 
-    # Valor não encontrado
-        if no is None:
-            return False
+      if z == self.NIL:
+        return False
 
-    # Caso 1: nó sem filhos
-        if no.esquerda is None and no.direita is None:
+      y = z
 
-            if no == self.raiz:
-                self.raiz = None
+      cor_original = y.cor
 
-            elif no == no.pai.esquerda:
-                no.pai.esquerda = None
+      if z.esquerda == self.NIL:
 
-            else:
-                no.pai.direita = None
+        x = z.direita
 
-    # Caso 2: nó possui apenas filho direito
-        elif no.esquerda is None:
+        self.substituir(z, z.direita)
 
-            self.substituir(no, no.direita)
+      elif z.direita == self.NIL:
 
-    # Caso 3: nó possui apenas filho esquerdo
-        elif no.direita is None:
+        x = z.esquerda
 
-            self.substituir(no, no.esquerda)
+        self.substituir(z, z.esquerda)
 
-    # Caso 4: nó possui dois filhos
+      else:
+
+        y = self.minimo(z.direita)
+
+        cor_original = y.cor
+
+        x = y.direita
+
+        if y.pai == z:
+
+            x.pai = y
+
         else:
 
-            sucessor = self.minimo(no.direita)
+            self.substituir(y, y.direita)
 
-            no.chave = sucessor.chave
+            y.direita = z.direita
 
-            if sucessor == sucessor.pai.esquerda:
-                sucessor.pai.esquerda = sucessor.direita
+            y.direita.pai = y
+
+        self.substituir(z, y)
+
+        y.esquerda = z.esquerda
+
+        y.esquerda.pai = y
+
+        y.cor = z.cor
+
+      if cor_original == "PRETO":
+        self.corrigir_remocao(x)
+
+      return True
+
+    def corrigir_remocao(self, x):
+
+      while x != self.raiz and x.cor == "PRETO":
+
+        if x == x.pai.esquerda:
+
+            irmao = x.pai.direita
+
+            # Caso 1
+            if irmao.cor == "VERMELHO":
+
+                irmao.cor = "PRETO"
+                x.pai.cor = "VERMELHO"
+
+                self.rotacao_esquerda(x.pai)
+
+                irmao = x.pai.direita
+
+            # Caso 2
+            if (irmao.esquerda.cor == "PRETO" and
+                irmao.direita.cor == "PRETO"):
+
+                irmao.cor = "VERMELHO"
+
+                x = x.pai
+
             else:
-                sucessor.pai.direita = sucessor.direita
 
-        return True
+                # Caso 3
+                if irmao.direita.cor == "PRETO":
+
+                    irmao.esquerda.cor = "PRETO"
+
+                    irmao.cor = "VERMELHO"
+
+                    self.rotacao_direita(irmao)
+
+                    irmao = x.pai.direita
+
+                # Caso 4
+                irmao.cor = x.pai.cor
+
+                x.pai.cor = "PRETO"
+
+                irmao.direita.cor = "PRETO"
+
+                self.rotacao_esquerda(x.pai)
+
+                x = self.raiz
+
+        else:
+
+            irmao = x.pai.esquerda
+
+            # Espelho do caso anterior
+            if irmao.cor == "VERMELHO":
+
+                irmao.cor = "PRETO"
+
+                x.pai.cor = "VERMELHO"
+
+                self.rotacao_direita(x.pai)
+
+                irmao = x.pai.esquerda
+
+            if (irmao.direita.cor == "PRETO" and
+                irmao.esquerda.cor == "PRETO"):
+
+                irmao.cor = "VERMELHO"
+
+                x = x.pai
+
+            else:
+
+                if irmao.esquerda.cor == "PRETO":
+
+                    irmao.direita.cor = "PRETO"
+
+                    irmao.cor = "VERMELHO"
+
+                    self.rotacao_esquerda(irmao)
+
+                    irmao = x.pai.esquerda
+
+                irmao.cor = x.pai.cor
+
+                x.pai.cor = "PRETO"
+
+                irmao.esquerda.cor = "PRETO"
+
+                self.rotacao_direita(x.pai)
+
+                x = self.raiz
+
+      x.cor = "PRETO"
 
     # Substitui um nó por outro
     def substituir(self, antigo, novo):
 
-        if antigo.pai is None:
-            self.raiz = novo
+      if antigo.pai is None:
+        self.raiz = novo
 
-        elif antigo == antigo.pai.esquerda:
-            antigo.pai.esquerda = novo
+      elif antigo == antigo.pai.esquerda:
+        antigo.pai.esquerda = novo
 
-        else:
-            antigo.pai.direita = novo
+      else:
+        antigo.pai.direita = novo
 
-        if novo:
-            novo.pai = antigo.pai
+      novo.pai = antigo.pai
 
     # Retorna o menor nó de uma subárvore
     def minimo(self, no):
 
-        while no.esquerda:
-            no = no.esquerda
+      while no.esquerda != self.NIL:
+        no = no.esquerda
 
-        return no        
+      return no      
     
     # Percurso em ordem
     def em_ordem(self, no):
@@ -233,7 +350,7 @@ class ArvoreRubroNegra:
 
     def mostrar_arvore(self, no, espaco="", ultimo=True):
 
-        if no is not None:
+        if no != self.NIL:
 
             print(espaco, end="")
 
@@ -248,3 +365,5 @@ class ArvoreRubroNegra:
 
             self.mostrar_arvore(no.esquerda, novo_espaco, False)
             self.mostrar_arvore(no.direita, novo_espaco, True)
+    def mostrar(self):
+      self.mostrar_arvore(self.raiz)
